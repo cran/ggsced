@@ -1,0 +1,733 @@
+---
+title: "Introduction to ggsced: Single-Case Experimental Design Visualizations with ggplot2"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to ggsced: Single-Case Experimental Design Visualizations with ggplot2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 6,
+  dev = "png",
+  # dpi = 600,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r setup, include=FALSE, echo=FALSE}
+library(ggsced)
+library(tidyverse)
+library(ggh4x)
+```
+
+## Introduction
+
+The `ggsced` package extends the powerful `ggplot2` visualization framework to provide specialized tools for creating high-quality graphics for Single-Case Experimental Design (SCED) research. SCED studies are a crucial methodology in behavioral and educational research, where individual participants serve as their own controls through carefully designed experimental phases. However, visualizing SCED data presents unique challenges that standard plotting functions may not adequately address. The `ggsced` package aims to fill this gap by offering functions tailored to the specific needs of SCED researchers.
+
+## Core Goals and Philosophy
+
+The primary goal of `ggsced` is to bridge the gap between the flexibility of `ggplot2` and the specific visualization needs of single-case researchers. Traditional plotting approaches often fall short when dealing with:
+
+- **Phase Change Lines**: Clear visual demarcation between experimental phases
+- **Multiple Baseline Designs**: Staggered intervention implementation across participants
+- **Complex Data Patterns**: Multiple dependent variables plotted simultaneously
+- **Professional Standards**: Publication-ready figures that meet APA and journal requirements
+
+The primary philosophy behind `ggsced` is to leverage the existing capabilities of `ggplot2` while providing additional functionality that simplifies the creation of SCED-specific visualizations. By building on top of `ggplot2`, `ggsced` ensures that users can take advantage of the extensive customization options and themes available in the broader R ecosystem. In particular, `ggsced` is designed to assist researchers in producing figures that are not only informative but also aesthetically pleasing and publication-ready for outlets that heavily emphasize SCED research/figure conventions.
+
+### Key Features
+
+`ggsced` provides several specialized functions that work seamlessly with `ggplot2`:
+
+- `ggsced()`: Core function for adding phase change lines to existing ggplot objects
+- `ggsced_style_x()` and `ggsced_style_y()`: Styling functions for axes that follow SCED conventions
+
+For the most part, ggsced is a 'helper' package that extends ggplot2 functionality for SCED researchers without the need for boilerplate code or alternative plotting tools.
+
+## Package Architecture
+
+The package is designed with modularity and extensibility in mind:
+
+1. **Core Visualization Functions** (`ggsced.R`): Primary plotting utilities
+2. **Theme and Styling** (`ggsced_theme.R`): Consistent visual styling
+3. **Utility Functions** (`ggsced_utils.R`): Helper functions for data manipulation
+4. **Reporting Tools** (`ggsced_reporting.R`): Functions for generating publication-ready outputs
+
+## Demonstration Examples
+
+This vignette includes several comprehensive examples using real research data to demonstrate the package's capabilities. Each example showcases different aspects of single-case experimental design visualization.
+
+## Baseline Example Setup
+
+All users should follow this general workflow when using `ggsced`:
+
+1. **Data Preparation**: Ensure your data is in a tidy format, with clear identifiers for participants, sessions, conditions, and dependent variables.
+2. **Base Plot Creation**: Use `ggplot2` to create the foundational plot, including points and lines for your data.
+3. **Phase Change Specification**: Define the phase change points using lists that indicate where lines should be drawn.
+4. **Styling and Customization**: Apply `ggsced` styling functions to ensure the plot adheres to SCED conventions (e.g., axis padding to disconnect x/y axes).
+
+This general process is illustrated in the following examples.
+
+## Example 1: Base Multiple Baseline Design (Gilroy et al., 2015)
+
+The first demonstration uses data from Gilroy et al. (2015), which represents a classic multiple baseline across participants design. This example showcases how to create publication-quality figures with staggered intervention implementation.
+
+### Step 1. Load Data and Prepare Base Plot
+
+For convenience, the `ggsced` package includes sample datasets from published SCED research. Here, we load the Gilroy et al. (2015) dataset and prepare the base plot and show the respective columns.
+
+```{r demo-gilroy-2015-step-1, eval=TRUE}
+library(ggsced)
+library(tidyverse)
+library(ggh4x)
+
+data_set <- Gilroyetal2015
+
+# Illustrate the structure of the dataset
+head(data_set)
+```
+
+In this dataset, there are columns for `Participant`, `Session`, `Condition`, and `Responding`. Each of these will be used with `ggplot2` to create the base plot.
+
+### Step 2. Create Base Plot with ggplot2
+
+The next step is to create the base plot using `ggplot2`, plotting `Responding` over `Session` for each `Condition`, and faceting by `Participant`. We use the `ggh4x` package for enhanced faceting capabilities, in particular, for retaining the x-axis on each facet while reserving the tick labels for the bottom figures alone.
+
+```{r demo-gilroy-2015-step-2, eval=TRUE}
+# Create condition labels for the plot
+data_labels <- data_set %>%
+  select(Participant, Condition) %>%
+  filter(Participant == "Andrew") %>%
+  unique() %>%
+  mutate(
+    x = c(2.5, 9, 18.5, 25.5),
+    y = 100
+  )
+
+participant_labels <- data_set %>%
+  select(Participant) %>%
+  unique() %>%
+  mutate(
+    x = rep(27, 3),
+    y = 0
+  )
+
+# Create the base ggplot
+p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
+  geom_line() +
+  geom_point(size = 3) +
+  geom_text(data = data_labels,
+            mapping = aes(x, y, label = Condition)) +
+  geom_text(data = participant_labels,
+            mapping = aes(x, y,
+              label = Participant
+            ),
+            inherit.aes = FALSE,
+            hjust = 1,
+            vjust = 0
+          ) +
+  facet_grid2(Participant ~ .,
+    remove_labels = "x",
+    axes = "x"
+  )
+
+p
+```
+
+At this point, the figure essentially shows the base theme and conventions reflected in `ggplot2` and `ggh4x`.
+
+### Step 3. Define Phase Change Lines
+
+The third step involves defining the phase change lines for the multiple baseline design. In this case, each participant has staggered intervention start points. The `ggsced` package allows us to specify these phase change lines using simple list structure. Note: keyed names are not imported, they are just named as such for readability and rely on order.
+
+The phase change lines are specified in vector format and reflex a point on the x-axis where a vertical line should be drawn. For each phase change line cross facets (e.g., `"1" = c(4.5, 11.5, 18.5),`), the order of the vector corresponds with the order of the facets (i.e., as participants would be drawn).
+
+```{r demo-gilroy-2015-step-3, eval=TRUE}
+# Create condition labels for the plot
+data_labels <- data_set %>%
+  select(Participant, Condition) %>%
+  filter(Participant == "Andrew") %>%
+  unique() %>%
+  mutate(
+    x = c(2.5, 9, 18.5, 25.5),
+    y = 100
+  )
+
+participant_labels <- data_set %>%
+  select(Participant) %>%
+  unique() %>%
+  mutate(
+    x = rep(27, 3),
+    y = 0
+  )
+
+# Create the base ggplot
+p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
+  geom_line() +
+  geom_point(size = 3) +
+  geom_text(
+    data = data_labels,
+    mapping = aes(x, y, label = Condition)
+  ) +
+  geom_text(
+    data = participant_labels,
+    mapping = aes(x, y,
+      label = Participant
+    ),
+    inherit.aes = FALSE,
+    hjust = 1,
+    vjust = 0
+  ) +
+  facet_grid2(Participant ~ .,
+    remove_labels = "x",
+    axes = "x"
+  )
+
+# Define staggered phase change lines for multiple baseline design
+staggered_pls <- list(
+  "1" = c(4.5, 11.5, 18.5),
+  "2" = c(13.5, 20.5, 23.5),
+  "3" = c(23.5, 23.5, 23.5)
+)
+
+# Add phase change lines using ggsced
+ggsced(p, staggered_pls)
+```
+
+This achieves the long-desired effect of clearly demarcating the different phases of the experimental design across multiple participants. However, it warrants noting that this is just one of several conventions expected in SCED figures and other aesthetic features are also critical for publication.
+
+### Step 4. Finalize Plot with Styling and Labels
+
+The final step involves applying `ggsced` styling functions to ensure the plot adheres to SCED conventions, such as adding padding to disconnect the x and y axes, and customizing axis labels and limits. To assist with adding in this space, two variables are specified (`y_mult` and `x_mult`) that define the amount of padding to add to each axis. The meaning of the 'mult' argument is the proportion of the total axis length to add as padding.
+
+```{r demo-gilroy-2015-step-4, eval=TRUE}
+# Create condition labels for the plot
+data_labels <- data_set %>%
+  select(Participant, Condition) %>%
+  filter(Participant == "Andrew") %>%
+  unique() %>%
+  mutate(
+    x = c(2.5, 9, 18.5, 25.5),
+    y = 97.5
+  )
+
+participant_labels <- data_set %>%
+  select(Participant) %>%
+  unique() %>%
+  mutate(
+    x = rep(27, 3),
+    y = 0
+  )
+
+# Set plot scaling parameters
+y_mult <- .05
+x_mult <- .02
+
+# Create the base ggplot
+p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
+  geom_line() +
+  geom_point(size = 3) +
+  geom_text(
+    data = data_labels,
+    mapping = aes(x, y, label = Condition),
+    hjust = 0.5,
+    vjust = 0.0625
+  ) +
+  geom_text(
+    data = participant_labels,
+    mapping = aes(x, y,
+      label = Participant
+    ),
+    inherit.aes = FALSE,
+    hjust = 1,
+    vjust = 0
+  ) +
+  scale_y_continuous(
+    name = "Percentage Accuracy",
+    limits = c(0, 100),
+    breaks = (0:4) * 25,
+    expand = expansion(mult = y_mult)
+  ) +
+  scale_x_continuous(
+    breaks = c(1:27),
+    limits = c(1, 27),
+    expand = expansion(mult = x_mult)
+  ) +
+  facet_grid2(Participant ~ .,
+    remove_labels = "x",
+    axes = "x"
+  ) +
+  theme(
+    text = element_text(size = 14, color = "black"),
+    panel.background = element_blank(),
+    strip.background = element_blank(),
+    strip.text = element_blank()
+  ) +
+  ggsced_style_x(x_mult, lwd = 1) +
+  ggsced_style_y(y_mult, lwd = 1)
+
+# Define staggered phase change lines for multiple baseline design
+staggered_pls <- list(
+  "1" = c(4.5, 11.5, 18.5),
+  "2" = c(13.5, 20.5, 23.5),
+  "3" = c(23.5, 23.5, 23.5)
+)
+
+# Add phase change lines using ggsced
+final_plot <- ggsced(p, staggered_pls)
+```
+
+As illustrated here, the final plot now adheres to SCED conventions, with clear phase change lines, appropriate axis scaling, and professional styling suitable for publication.
+
+### Key Features Demonstrated:
+
+- **Multiple Baseline Design**: Staggered intervention implementation across three participants
+- **Phase Change Lines**: Clear visual separation between baseline and intervention phases
+- **Professional Styling**: Publication-ready aesthetics with proper fonts and scaling
+- **Faceted Layout**: Separate panels for each participant while maintaining visual coherence
+
+## Example 2: Cross-lagged Reversal Design across Participants (Gilroy et al., 2021)
+
+The second demonstration uses data from Gilroy et al. (2021), which involves a reversal design illustrated across multiple participants using a common phase change annotation.  
+
+### Step 1. Load Data and Prepare Base Plot
+
+For convenience, the `ggsced` package includes sample datasets from published SCED research. Here, we load the Gilroy et al. (2015) dataset and prepare the base plot and show the respective columns.
+
+```{r demo-gilroy-2021-step-1, eval=TRUE}
+library(ggsced)
+library(tidyverse)
+library(ggh4x)
+
+data <- Gilroyetal2021
+
+# Illustrate the structure of the dataset
+head(data)
+```
+
+In this dataset, there are columns for `Participant`, `Session`, `Condition`, `Responding`, and `Reinforcers`. Additionally, there is another column (`PhaseNum`) that assists with separating/distinguishing between multiple 'Baseline' phases within each individual (i.e., we do not want them to connect).
+
+Each of these will be used with `ggplot2` to create the base plot.
+
+### Step 2. Create Base Plot with ggplot2
+
+The next step is to create the base plot using `ggplot2`, plotting `Responding` over `Session` for each `Condition`, and faceting by `Participant`. We use the `ggh4x` package for enhanced faceting capabilities, in particular, for retaining the x-axis on each facet while reserving the tick labels for the bottom figures alone.
+
+```{r demo-gilroy-2021-step-2, eval=TRUE}
+data <- Gilroyetal2021
+
+data_labels <- data %>%
+  select(Participant, Condition) %>%
+  filter(Participant == "John") %>%
+  unique() %>%
+  mutate(
+    x = c(2, 5, 8, 11, 14, 18),
+    Label = gsub("2", "", Condition),
+    y = 20
+  )
+
+series_labels <- data %>%
+  filter(Participant == "John") %>%
+  select(Participant, Condition) %>%
+  slice(1:2) %>%
+  mutate(
+    x0 = c(20.5, 20.5),
+    x1 = c(19.5, 19.5),
+    y = c(15, 5),
+    Label = c("Responses", "Reinforcers")
+  )
+
+participant_labels <- data %>%
+  select(Participant) %>%
+  unique() %>%
+  mutate(
+    x = rep(25, 3),
+    y = c(19.5, 9.5, 0)
+  )
+
+p <- ggplot(data, aes(Session, Responding,
+  group = Condition
+)) +
+  geom_line() +
+  geom_point(
+    size = 2.5,
+    pch = 21,
+    fill = "black"
+  ) +
+  geom_line(
+    mapping = aes(Session, Reinforcers),
+    lty = 2
+  ) +
+  geom_point(
+    mapping = aes(Session, Reinforcers),
+    size = 2.5,
+    pch = 24,
+    fill = "white"
+  ) +
+  geom_text(
+    data = data_labels,
+    mapping = aes(x, y,
+      label = Label
+    ),
+    inherit.aes = FALSE
+  ) +
+  geom_segment(
+    data = series_labels,
+    aes(x = x0, y, xend = x1, yend = y),
+    arrow = arrow(length = unit(0.25, "cm"))
+  ) +
+  geom_text(
+    data = series_labels,
+    hjust = 0,
+    mapping = aes(
+      x = x0 + 0.1, y,
+      label = Label
+    ),
+    inherit.aes = FALSE
+  ) +
+  geom_text(
+    data = participant_labels,
+    mapping = aes(x, y,
+      label = Participant
+    ),
+    inherit.aes = FALSE,
+    hjust = 1,
+    vjust = 0
+  ) +
+  facet_grid2(Participant ~ .,
+    scales = "free_y",
+    remove_labels = "x",
+    axes = "x"
+  )
+
+p
+```
+
+### Step 3. Define Phase Change Lines
+
+The third step involves defining the phase change lines for the multiple baseline design. In this case, each participant has staggered intervention start points. In addition to specifying these phase change lines using simple list structure, we will also define offsets to slightly adjust the vertical placement of the phase change lines to avoid overlap with data points. This is often necessary when phase changes between participants/panels overlap and there is a need for clarity.
+
+```{r demo-gilroy-2021-step-3, eval=TRUE}
+data <- Gilroyetal2021
+
+data_labels <- data %>%
+  select(Participant, Condition) %>%
+  filter(Participant == "John") %>%
+  unique() %>%
+  mutate(
+    x = c(2, 5, 8, 11, 14, 18),
+    Label = gsub("2", "", Condition),
+    y = 20
+  )
+
+series_labels <- data %>%
+  filter(Participant == "John") %>%
+  select(Participant, Condition) %>%
+  slice(1:2) %>%
+  mutate(
+    x0 = c(20.5, 20.5),
+    x1 = c(19.5, 19.5),
+    y = c(15, 5),
+    Label = c("Responses", "Reinforcers")
+  )
+
+participant_labels <- data %>%
+  select(Participant) %>%
+  unique() %>%
+  mutate(
+    x = rep(25, 3),
+    y = c(19.5, 9.5, 0)
+  )
+
+p <- ggplot(data, aes(Session, Responding,
+  group = Condition
+)) +
+  geom_line() +
+  geom_point(
+    size = 2.5,
+    pch = 21,
+    fill = "black"
+  ) +
+  geom_line(
+    mapping = aes(Session, Reinforcers),
+    lty = 2
+  ) +
+  geom_point(
+    mapping = aes(Session, Reinforcers),
+    size = 2.5,
+    pch = 24,
+    fill = "white"
+  ) +
+  geom_text(
+    data = data_labels,
+    mapping = aes(x, y,
+      label = Label
+    ),
+    inherit.aes = FALSE
+  ) +
+  geom_segment(
+    data = series_labels,
+    aes(x = x0, y, xend = x1, yend = y),
+    arrow = arrow(length = unit(0.25, "cm"))
+  ) +
+  geom_text(
+    data = series_labels,
+    hjust = 0,
+    mapping = aes(
+      x = x0 + 0.1, y,
+      label = Label
+    ),
+    inherit.aes = FALSE
+  ) +
+  geom_text(
+    data = participant_labels,
+    mapping = aes(x, y,
+      label = Participant
+    ),
+    inherit.aes = FALSE,
+    hjust = 1,
+    vjust = 0
+  ) +
+  scale_x_continuous(
+    breaks = c(1:25),
+    limits = c(1, 25),
+    expand = expansion(mult = x_mult)
+  ) +
+  facet_grid2(Participant ~ .,
+    scales = "free_y",
+    remove_labels = "x",
+    axes = "x"
+  )
+
+staggered_pls <- list(
+  "1" = c(3.5, 3.5, 3.5),
+  "2" = c(6.5, 6.5, 8.5),
+  "3" = c(9.5, 9.5, 11.5),
+  "4" = c(12.5, 16.5, 16.5),
+  "5" = c(15.5, 22.5, 19.5)
+)
+
+# Note: see the non-zero number in the last list element below
+offsets_pls <- list(
+  "1" = c(F, F, F),
+  "2" = c(F, F, F),
+  "3" = c(F, F, F),
+  "4" = c(F, F, F),
+  "5" = c(T, F, F)
+)
+
+ggsced(p, legs = staggered_pls, offs = offsets_pls)
+```
+
+As illustrated above, the final phase change line is dodged slightly upward for the first participant to avoid overlap the preceding phase change line.
+
+### Step 4. Finalize Plot with Styling and Labels
+
+The final step involves applying `ggsced` styling functions to ensure the plot adheres to SCED conventions, such as adding padding to disconnect the x and y axes, and customizing axis labels and limits. To assist with adding in this space, two variables are specified (`y_mult` and `x_mult`) that define the amount of padding to add to each axis. The meaning of the 'mult' argument is the proportion of the total axis length to add as padding.
+
+```{r demo-gilroy-2021-step-4, eval=TRUE}
+rm(list = ls())
+
+library(ggsced)
+library(tidyverse)
+library(ggh4x)
+
+data <- Gilroyetal2021
+
+y_mult <- .05
+x_mult <- .02
+
+data_labels <- data %>%
+  select(Participant, Condition) %>%
+  filter(Participant == "John") %>%
+  unique() %>%
+  mutate(
+    x = c(2, 5, 8, 11, 14, 18),
+    Label = gsub("2", "", Condition),
+    y = 20
+  )
+
+series_labels <- data %>%
+  filter(Participant == "John") %>%
+  select(Participant, Condition) %>%
+  slice(1:2) %>%
+  mutate(
+    x0 = c(20.5, 20.5),
+    x1 = c(19.5, 19.5),
+    y = c(15, 5),
+    Label = c("Responses", "Reinforcers")
+  )
+
+participant_labels <- data %>%
+  select(Participant) %>%
+  unique() %>%
+  mutate(
+    x = rep(25, 3),
+    y = c(19.5, 9.5, 0)
+  )
+
+p <- ggplot(data, aes(Session, Responding,
+  group = Condition
+)) +
+  geom_line() +
+  geom_point(
+    size = 2.5,
+    pch = 21,
+    fill = "black"
+  ) +
+  geom_line(
+    mapping = aes(Session, Reinforcers),
+    lty = 2
+  ) +
+  geom_point(
+    mapping = aes(Session, Reinforcers),
+    size = 2.5,
+    pch = 24,
+    fill = "white"
+  ) +
+  geom_text(
+    data = data_labels,
+    mapping = aes(x, y,
+      label = Label
+    ),
+    inherit.aes = FALSE
+  ) +
+  geom_segment(
+    data = series_labels,
+    aes(x = x0, y, xend = x1, yend = y),
+    arrow = arrow(length = unit(0.25, "cm"))
+  ) +
+  geom_text(
+    data = series_labels,
+    hjust = 0,
+    mapping = aes(
+      x = x0 + 0.1, y,
+      label = Label
+    ),
+    inherit.aes = FALSE
+  ) +
+  geom_text(
+    data = participant_labels,
+    mapping = aes(x, y,
+      label = Participant
+    ),
+    inherit.aes = FALSE,
+    hjust = 1,
+    vjust = 0
+  ) +
+  scale_x_continuous(
+    breaks = c(1:25),
+    limits = c(1, 25),
+    expand = expansion(mult = x_mult)
+  ) +
+  facet_grid2(Participant ~ .,
+    scales = "free_y",
+    remove_labels = "x",
+    axes = "x"
+  ) +
+  facetted_pos_scales(
+    y = list(
+      scale_y_continuous(
+        name = "Frequency",
+        breaks = c(0, 10, 20),
+        limits = c(0, 20),
+        expand = expansion(mult = y_mult)
+      ),
+      scale_y_continuous(
+        name = "Frequency",
+        breaks = c(0, 5, 10),
+        limits = c(0, 10),
+        expand = expansion(mult = y_mult)
+      ),
+      scale_y_continuous(
+        name = "Frequency",
+        breaks = c(0, 10, 20),
+        limits = c(0, 20),
+        expand = expansion(mult = y_mult)
+      )
+    )
+  ) +
+  theme(
+    text = element_text(
+      size = 14,
+      color = "black"
+    ),
+    panel.background = element_blank(),
+    strip.background = element_blank(),
+    strip.text = element_blank()
+  ) +
+  ggsced_style_x(x_mult, lwd = 2) +
+  ggsced_style_y(y_mult, lwd = 2)
+
+staggered_pls <- list(
+  "1" = c(3.5, 3.5, 3.5),
+  "2" = c(6.5, 6.5, 8.5),
+  "3" = c(9.5, 9.5, 11.5),
+  "4" = c(12.5, 16.5, 16.5),
+  "5" = c(15.5, 22.5, 19.5)
+)
+
+offsets_pls <- list(
+  "1" = c(F, F, F),
+  "2" = c(F, F, F),
+  "3" = c(F, F, F),
+  "4" = c(F, F, F),
+  "5" = c(T, F, F)
+)
+
+ggsced(p, legs = staggered_pls, offs = offsets_pls)
+```
+
+As illustrated here, the final plot now adheres to SCED conventions, with clear phase change lines (including a dodge), appropriate axis scaling, and professional styling suitable for publication.
+
+### Key Features Demonstrated:
+
+- **Alternating Treatment Design**: Rapid alternation between different intervention conditions
+- **Dual Dependent Variables**: Response rate and reinforcement rate plotted together
+- **Flexible Scaling**: Independent y-axis scaling for different participants
+- **Condition Labeling**: Clear identification of different treatment phases
+
+## Best Practices and Recommendations
+
+When using `ggsced` for your single-case research visualizations, consider the following best practices:
+
+### 1. Data Preparation
+- Ensure your data includes clear participant, session, and condition variables
+- Use consistent naming conventions across studies
+- Consider long-format data structures for optimal compatibility with ggplot2
+
+### 2. Visual Design Principles
+- Use the package's styling functions to maintain consistency across figures
+- Choose appropriate point shapes and line types to distinguish between measures
+- Ensure adequate contrast and accessibility in your color choices
+
+### 3. Phase Change Implementation
+- Plan your phase change points carefully to align with your experimental design
+- Use the staggered phase change lists for multiple baseline designs
+- Consider offset options for overlapping phase changes
+
+### 4. Publication Considerations
+- Use consistent fonts (Times New Roman is standard for many journals)
+- Ensure appropriate figure dimensions and resolution for your target publication
+- Include clear legends and labels for all plotted elements
+
+## Conclusion
+
+The `ggsced` package represents a significant advancement in single-case research visualization capabilities. By extending `ggplot2` with specialized functions for SCED research, it enables researchers to create publication-quality figures that accurately represent the complexity and rigor of single-case experimental designs.
+
+The package's modular design ensures that it can adapt to the diverse needs of single-case researchers while maintaining the flexibility and power that makes `ggplot2` the gold standard for statistical graphics in R.
+
+## Additional Resources
+
+- Package documentation: `help(package = "ggsced")`
+- Demo files: Available in the package's `demo/` directory
+- GitHub repository: [Include repository URL]
+- Related packages: `ggplot2`, `ggh4x`, `grid`, `gtable`
+
+For questions, bug reports, or feature requests, please visit the package's GitHub repository or contact the maintainer.
