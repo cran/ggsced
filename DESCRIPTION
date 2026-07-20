@@ -2,7 +2,7 @@ Package: ggsced
 Type: Package
 Title: Utilities and Helpers for Single Case Experimental Design (SCED)
         using 'ggplot2'
-Version: 0.1.6
+Version: 0.1.7
 Authors@R: person(given = "Shawn",
            family = "Gilroy",
            role = c("aut", "cre", "cph"),
@@ -19,16 +19,16 @@ Description: Provides specialized visualization tools for Single-Case Experiment
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
-Depends: ggplot2, ggh4x, R (>= 3.5.0)
-Imports: grid, gtable, assert
+Depends: ggplot2, R (>= 3.5.0)
+Imports: grid, gtable, ggh4x, assert
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0), usethis, tidyverse
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2026-01-16 12:49:03 UTC; shawn
+Packaged: 2026-07-20 14:07:37 UTC; shawngilroy
 Author: Shawn Gilroy [aut, cre, cph] (ORCID:
     <https://orcid.org/0000-0002-1097-8366>)
 Maintainer: Shawn Gilroy <sgilroy1@lsu.edu>
 Repository: CRAN
-Date/Publication: 2026-01-21 20:10:14 UTC
+Date/Publication: 2026-07-20 14:30:02 UTC

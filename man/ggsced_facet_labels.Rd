@@ -17,5 +17,6 @@ ggsced_facet_labels(plt, y = 0, x = NULL)
 a data frame that can be used with a geom_text layer
 }
 \description{
-Optional helper class to prepare facet labels (e.g., Participant names) based on the faceting of an existing ggplot object
+Optional helper class to prepare facet labels (e.g., Participant names)
+based on the faceting of an existing ggplot object
 }

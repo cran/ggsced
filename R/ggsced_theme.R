@@ -29,6 +29,7 @@
 #' @export
 #'
 ggsced_style_y <- function(expansion = 0.00, lwd = 2, col = "black") {
+  .Deprecated("ggplot2::scale_y_...")
   ggplot2::annotation_custom(ggsced_internal_y_axis(expansion,
                                                     lwd,
                                                     col))
@@ -48,6 +49,7 @@ ggsced_style_y <- function(expansion = 0.00, lwd = 2, col = "black") {
 #' @export
 #'
 ggsced_style_x <- function(expansion = 0.00, lwd = 2, col = "black") {
+  .Deprecated("ggplot2::scale_x_...")
   ggplot2::annotation_custom(ggsced_internal_x_axis(expansion,
                                                     lwd,
                                                     col))

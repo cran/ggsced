@@ -91,14 +91,16 @@ sced_phase_change_complex_lateral_post_grob <- function(x, segment_name) {
                      x1 = grid::unit(x, "npc"),
                      y0 = grid::unit(0.5, "npc"),
                      y1 = grid::unit(0, "npc"),
-                     name = paste(segment_name, 'post'))
+                     name = paste(segment_name, "post"))
 }
 
 #' ggsced_internal_x_axis
 #'
-#' Internal helper class to draw a conventional x-axis per SCED publication suggestions.
+#' Internal helper class to draw a conventional
+#' x-axis per SCED publication suggestions.
 #'
-#' @param expansion Percentage of axis to pad (left/right) to break axis (Note: normalized parent units)
+#' @param expansion Percentage of axis to pad (left/right)
+#' to break axis (Note: normalized parent units)
 #' @param lwd Width of axis line
 #' @param col Color of axis drawn (default = 'black')
 #'
@@ -107,6 +109,7 @@ sced_phase_change_complex_lateral_post_grob <- function(x, segment_name) {
 #' @import grid
 #'
 ggsced_internal_x_axis <- function(expansion = 0.00, lwd = 2, col = "black") {
+  .Deprecated("ggplot::scale_x_...")
   grid::linesGrob(x = grid::unit(c(expansion, 1 - expansion), "npc"),
                   y = c(0, 0),
                   gp = grid::gpar(lwd = lwd, col = col))
@@ -114,9 +117,11 @@ ggsced_internal_x_axis <- function(expansion = 0.00, lwd = 2, col = "black") {
 
 #' ggsced_internal_y_axis
 #'
-#' Internal helper class to draw a conventional y-axis per SCED publication suggestions.
+#' Internal helper class to draw a conventional
+#' y-axis per SCED publication suggestions.
 #'
-#' @param expansion Percentage of axis to pad (top/bottom) to break axis (Note: normalized parent units)
+#' @param expansion Percentage of axis to pad (top/bottom)
+#' to break axis (Note: normalized parent units)
 #' @param lwd Width of axis line
 #' @param col Color of axis drawn (default = 'black')
 #'
@@ -125,6 +130,7 @@ ggsced_internal_x_axis <- function(expansion = 0.00, lwd = 2, col = "black") {
 #' @import grid
 #'
 ggsced_internal_y_axis <- function(expansion = 0.00, lwd = 2, col = "black") {
+  .Deprecated("ggplot::scale_y_...")
   grid::linesGrob(x = c(0, 0),
                   y = grid::unit(c(expansion, 1 - expansion), "npc"),
                   gp = grid::gpar(lwd = lwd, col = col))

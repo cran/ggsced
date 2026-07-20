@@ -82,24 +82,27 @@ p = ggplot(data, aes(Session, Responding,
   scale_x_continuous(breaks = c(1:25),
                      limits = c(1, 25),
                      expand = expansion(mult = x_mult)) +
-  facet_grid2(Participant ~ .,
-              scales = "free_y",
-              remove_labels = "x",
-              axes = "x")  +
+  facet_grid(rows = vars(Participant),
+             scales = "free_y",
+             axes = "all",
+             axis.labels = "margins") +
   facetted_pos_scales(
     y = list(
       scale_y_continuous(name = "Frequency",
                          breaks = c(0, 10, 20),
                          limits = c(0, 20),
-                         expand = expansion(mult = y_mult)),
+                         expand = expansion(mult = y_mult),
+                         guide = guide_axis(cap = "both")),
       scale_y_continuous(name = "Frequency",
                          breaks = c(0, 5, 10),
                          limits = c(0, 10),
-                         expand = expansion(mult = y_mult)),
+                         expand = expansion(mult = y_mult),
+                         guide = guide_axis(cap = "both")),
       scale_y_continuous(name = "Frequency",
                          breaks = c(0, 10, 20),
                          limits = c(0, 20),
-                         expand = expansion(mult = y_mult))
+                         expand = expansion(mult = y_mult),
+                         guide = guide_axis(cap = "both"))
     )
   ) +
   theme(
@@ -108,9 +111,7 @@ p = ggplot(data, aes(Session, Responding,
     panel.background = element_blank(),
     strip.background = element_blank(),
     strip.text = element_blank()
-  ) +
-  ggsced_style_x(x_mult, lwd = 2) +
-  ggsced_style_y(y_mult, lwd = 2)
+  )
 
 simple_facet_labels_df = ggsced_facet_labels(p, y = 20)
 simple_facet_labels_df[2, "Responding"] <- 10
@@ -206,25 +207,29 @@ p = ggplot(data, aes(Session, Responding,
              fill = 'white') +
   scale_x_continuous(breaks = c(1:25),
                      limits = c(1, 25),
-                     expand = expansion(mult = x_mult)) +
-  facet_grid2(Participant ~ .,
-              scales = "free_y",
-              remove_labels = "x",
-              axes = "x")  +
+                     expand = expansion(mult = x_mult),
+                     guide = guide_axis(cap = "both")) +
+  facet_grid(rows = vars(Participant),
+             scales = "free_y",
+             axes = "all",
+             axis.labels = "margins") +
   facetted_pos_scales(
     y = list(
       scale_y_continuous(name = "Frequency",
                          breaks = c(0, 10, 20),
                          limits = c(0, 20),
-                         expand = expansion(mult = y_mult)),
+                         expand = expansion(mult = y_mult),
+                         guide = guide_axis(cap = "both")),
       scale_y_continuous(name = "Frequency",
                          breaks = c(0, 5, 10),
                          limits = c(0, 10),
-                         expand = expansion(mult = y_mult)),
+                         expand = expansion(mult = y_mult),
+                         guide = guide_axis(cap = "both")),
       scale_y_continuous(name = "Frequency",
                          breaks = c(0, 10, 20),
                          limits = c(0, 20),
-                         expand = expansion(mult = y_mult))
+                         expand = expansion(mult = y_mult),
+                         guide = guide_axis(cap = "both"))
     )
   ) +
   theme(
@@ -233,9 +238,7 @@ p = ggplot(data, aes(Session, Responding,
     panel.background = element_blank(),
     strip.background = element_blank(),
     strip.text = element_blank()
-  ) +
-  ggsced_style_x(x_mult, lwd = 2) +
-  ggsced_style_y(y_mult, lwd = 2)
+  )
 
 simple_facet_labels_df = ggsced_facet_labels(p, y = 20)
 simple_facet_labels_df[2, "Responding"] <- 10
@@ -321,7 +324,7 @@ The package includes several real research datasets for learning and demonstrati
 - `ggplot2`: Core plotting functionality
 - `grid`: Low-level graphics operations
 - `gtable`: Plot layout management
-- `ggh4x`: Extended ggplot2 functionality
+- `ggh4x`: Extended ggplot2 functionality (multiple y position scales)
 
 ## Author and Contact
 
@@ -352,7 +355,7 @@ If you use `ggsced` in your research, please cite it appropriately:
 
 ```
 Gilroy, S. P. (2026). ggsced: Utilities and helpers for Single-Case
-Experimental Design using ggplot2. R package version 0.1.0.
+Experimental Design using ggplot2. R package version 0.1.7.
 https://github.com/miyamot0/ggsced
 ```
 

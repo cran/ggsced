@@ -27,10 +27,10 @@
 #'
 #' @return Finalized figure with respective phase change lines embedded.
 #' @importFrom assert assert
+#' @importFrom ggh4x facetted_pos_scales
 #' @importFrom ggplot2 ggplot_build
 #' @importFrom ggplot2 ggplotGrob
 #' @importFrom gtable gtable_add_grob
-#' @import ggh4x
 #' @import grid
 #' @export
 #'
@@ -74,7 +74,7 @@ ggsced <- function(plt, legs,
   lcl_panels <- ggsced_get_panels(lcl_ggplot_grobs)
 
   # Number of panels as per the drawn figure
-  lcl_n_panels = nrow(lcl_panels)
+  lcl_n_panels <- nrow(lcl_panels)
   assert::assert(!is.null(lcl_n_panels),
                  lcl_n_panels > 0,
                  msg = "Failed to identify multiple panels")
@@ -82,7 +82,7 @@ ggsced <- function(plt, legs,
   ggsced_output_console("\u2705 Panels Extracted: Multiple panels pulled from gTree", verbose)
 
   # Assert: Must be uniform length legs
-  leg_lengths = unlist(lapply(legs, function(vec) {
+  leg_lengths <- unlist(lapply(legs, function(vec) {
     assert::assert(all(is.numeric(vec)),
                    msg = "Phase change points must be of numeric type.")
     length(vec)
@@ -95,7 +95,7 @@ ggsced <- function(plt, legs,
 
   if (!is.null(offs)) {
     # Assert: Must be uniform length legs
-    offset_lengths = unlist(lapply(offs, function(vec) {
+    offset_lengths <- unlist(lapply(offs, function(vec) {
       assert::assert(all(is.logical(vec)),
                      msg = "Phase change points must be of numeric type.")
       length(vec)
@@ -111,17 +111,17 @@ ggsced <- function(plt, legs,
     ggsced_output_console("\u2705 Phase Change Offsets: list of vectors of uniform length", verbose)
   }
 
-  n_leg = 0
+  n_leg <- 0
 
   for (pl in legs) {
-    n_leg = n_leg + 1
+    n_leg <- n_leg + 1
 
     for (row in seq_len(lcl_n_panels)) {
       # Reference respective panel pulled from gTree
-      lcl_panel = lcl_panels[row,]
+      lcl_panel <- lcl_panels[row,]
 
       # Confirm if there are panels that follow this one
-      has_more_rows = row < lcl_n_panels
+      has_more_rows <- row < lcl_n_panels
 
       # Extract range from grob (presuming uniform)
       x_range <- ggsced_extract_domain(lcl_ggplot_build$layout$panel_params[[row]])
@@ -132,26 +132,26 @@ ggsced <- function(plt, legs,
       # Dynamic b = dynamic 'bottom' in the gTable object (i.e., t:b, common l/r)
       # If MORE ROWS, should extend JUST ABOVE next panel (i.e., n_2 - t)
       # If LAST ROW, the b should just t for current panel (i.e., n = n)
-      dynamic_b = ifelse(has_more_rows == TRUE,
-                         lcl_panels[row + 1, "t"] - 1,
-                         lcl_panel$t)
+      dynamic_b <- ifelse(has_more_rows == TRUE,
+                          lcl_panels[row + 1, "t"] - 1,
+                          lcl_panel$t)
 
       # Dynamic offs = offsets to typical 'lateral' phase lines
       # Note: This is uncommon, so more of a special case
       # Generally, should be TRUE to notch up VERY SLIGHTLY
-      dynamic_offs = ifelse(is.null(offs) == FALSE,
-                            offs[[n_leg]][row],
-                            FALSE)
+      dynamic_offs <- ifelse(is.null(offs) == FALSE,
+                             offs[[n_leg]][row],
+                             FALSE)
 
       # TODO: Make this more clear/sane
-      draw_short = dynamic_offs
+      draw_short <- dynamic_offs
 
       if (draw_short == TRUE) {
-        dynamic_b = dynamic_b - 2
+        dynamic_b <- dynamic_b - 2
 
         # Note: This is the full segment
-        main_segment_name = ggsced_name_dogleg(lcl_panel, row, n_leg)
-        main_segment = sced_phase_change_main_panel_grob(npc_x, main_segment_name)
+        main_segment_name <- ggsced_name_dogleg(lcl_panel, row, n_leg)
+        main_segment <- sced_phase_change_main_panel_grob(npc_x, main_segment_name)
         lcl_ggplot_grobs <- gtable::gtable_add_grob(lcl_ggplot_grobs,
                                                     main_segment,
                                                     t = lcl_panel$t,
@@ -161,9 +161,9 @@ ggsced <- function(plt, legs,
                                                     name = main_segment_name)
 
         # Note: This is linking to full segment if in shortened space
-        main_segment_pre = sced_phase_change_complex_lateral_pre_grob(npc_x,
-                                                                      paste(main_segment_name,
-                                                                            'pre-lateral'))
+        main_segment_pre <- sced_phase_change_complex_lateral_pre_grob(npc_x,
+                                                                       paste(main_segment_name,
+                                                                             'pre-lateral'))
         lcl_ggplot_grobs <- gtable::gtable_add_grob(lcl_ggplot_grobs,
                                                     main_segment_pre,
                                                     t = dynamic_b + 1,
@@ -172,13 +172,13 @@ ggsced <- function(plt, legs,
                                                     name = paste(main_segment_name, 'pre'))
 
         if (has_more_rows == TRUE) {
-          main_segment_lateral_name = ggsced_name_dogleg_lateral(lcl_panel, row, n_leg)
+          main_segment_lateral_name <- ggsced_name_dogleg_lateral(lcl_panel, row, n_leg)
           npc_x2 <- ggsced_scale_units(pl[row + 1], x_range)
 
           # Note: This is linking to full segment if in shortened space
-          main_segment_post = sced_phase_change_complex_lateral_post_grob(npc_x2,
-                                                                          paste(main_segment_lateral_name,
-                                                                                'post-lateral'))
+          main_segment_post <- sced_phase_change_complex_lateral_post_grob(npc_x2,
+                                                                           paste(main_segment_lateral_name,
+                                                                                 'post-lateral'))
           lcl_ggplot_grobs <- gtable::gtable_add_grob(lcl_ggplot_grobs,
                                                       main_segment_post,
                                                       t = dynamic_b + 1,
@@ -187,9 +187,9 @@ ggsced <- function(plt, legs,
                                                       name = paste(main_segment_lateral_name,
                                                                    'post-lateral'))
 
-          lateral_segment2 = sced_phase_change_complex_lateral_grob(npc_x, npc_x2,
-                                                                    paste0(main_segment_lateral_name,
-                                                                           'lateral'))
+          lateral_segment2 <- sced_phase_change_complex_lateral_grob(npc_x, npc_x2,
+                                                                     paste0(main_segment_lateral_name,
+                                                                            'lateral'))
           lcl_ggplot_grobs <- gtable::gtable_add_grob(lcl_ggplot_grobs,
                                                       lateral_segment2,
                                                       t = lcl_panels[row + 1,]$t - 2,
@@ -200,8 +200,8 @@ ggsced <- function(plt, legs,
         }
       } else {
         # Note: This is the full segment
-        main_segment_name = ggsced_name_dogleg(lcl_panel, row, n_leg)
-        main_segment = sced_phase_change_main_panel_grob(npc_x, main_segment_name)
+        main_segment_name <- ggsced_name_dogleg(lcl_panel, row, n_leg)
+        main_segment <- sced_phase_change_main_panel_grob(npc_x, main_segment_name)
 
         lcl_ggplot_grobs <- gtable::gtable_add_grob(lcl_ggplot_grobs,
                                                     main_segment,
@@ -212,10 +212,10 @@ ggsced <- function(plt, legs,
                                                     name = main_segment_name)
 
         if (has_more_rows == TRUE) {
-          main_segment_lateral_name = ggsced_name_dogleg_lateral(lcl_panel, row, n_leg)
+          main_segment_lateral_name <- ggsced_name_dogleg_lateral(lcl_panel, row, n_leg)
           npc_x2 <- ggsced_scale_units(pl[row + 1], x_range)
-          lateral_segment = sced_phase_change_simple_lateral_grob(npc_x, npc_x2,
-                                                                  main_segment_lateral_name)
+          lateral_segment <- sced_phase_change_simple_lateral_grob(npc_x, npc_x2,
+                                                                   main_segment_lateral_name)
 
           lcl_ggplot_grobs <- gtable::gtable_add_grob(lcl_ggplot_grobs,
                                                       lateral_segment,

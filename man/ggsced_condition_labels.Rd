@@ -15,5 +15,6 @@ ggsced_condition_labels(plt, y = NULL)
 a data frame that can be used with a geom_text layer
 }
 \description{
-Optional helper class to prepare condition labels (e.g., Baseline, Intervention) based on the grouping of an existing ggplot object
+Optional helper class to prepare condition labels (e.g., Baseline,
+Intervention) based on the grouping of an existing ggplot object
 }

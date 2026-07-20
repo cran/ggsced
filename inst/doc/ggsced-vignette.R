@@ -5,7 +5,6 @@ knitr::opts_chunk$set(
   fig.width = 8,
   fig.height = 6,
   dev = "png",
-  # dpi = 600,
   warning = FALSE,
   message = FALSE
 )
@@ -18,7 +17,6 @@ library(ggh4x)
 ## ----demo-gilroy-2015-step-1, eval=TRUE---------------------------------------
 library(ggsced)
 library(tidyverse)
-library(ggh4x)
 
 data_set <- Gilroyetal2015
 
@@ -58,10 +56,9 @@ p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
             hjust = 1,
             vjust = 0
           ) +
-  facet_grid2(Participant ~ .,
-    remove_labels = "x",
-    axes = "x"
-  )
+  facet_grid(rows = vars(Participant),
+             axes = "all",
+             axis.labels = "margins")
 
 p
 
@@ -101,10 +98,9 @@ p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
     hjust = 1,
     vjust = 0
   ) +
-  facet_grid2(Participant ~ .,
-    remove_labels = "x",
-    axes = "x"
-  )
+  facet_grid(rows = vars(Participant),
+             axes = "all",
+             axis.labels = "margins")
 
 # Define staggered phase change lines for multiple baseline design
 staggered_pls <- list(
@@ -162,25 +158,24 @@ p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
     name = "Percentage Accuracy",
     limits = c(0, 100),
     breaks = (0:4) * 25,
-    expand = expansion(mult = y_mult)
+    expand = expansion(mult = y_mult),
+    guide = guide_axis(cap = "both")
   ) +
   scale_x_continuous(
     breaks = c(1:27),
     limits = c(1, 27),
-    expand = expansion(mult = x_mult)
+    expand = expansion(mult = x_mult),
+    guide = guide_axis(cap = "both")
   ) +
-  facet_grid2(Participant ~ .,
-    remove_labels = "x",
-    axes = "x"
-  ) +
+  facet_grid(rows = vars(Participant),
+             axes = "all",
+             axis.labels = "margins") +
   theme(
     text = element_text(size = 14, color = "black"),
     panel.background = element_blank(),
     strip.background = element_blank(),
     strip.text = element_blank()
-  ) +
-  ggsced_style_x(x_mult, lwd = 1) +
-  ggsced_style_y(y_mult, lwd = 1)
+  )
 
 # Define staggered phase change lines for multiple baseline design
 staggered_pls <- list(
@@ -195,7 +190,6 @@ final_plot <- ggsced(p, staggered_pls)
 ## ----demo-gilroy-2021-step-1, eval=TRUE---------------------------------------
 library(ggsced)
 library(tidyverse)
-library(ggh4x)
 
 data <- Gilroyetal2021
 
@@ -283,11 +277,10 @@ p <- ggplot(data, aes(Session, Responding,
     hjust = 1,
     vjust = 0
   ) +
-  facet_grid2(Participant ~ .,
-    scales = "free_y",
-    remove_labels = "x",
-    axes = "x"
-  )
+  facet_grid(rows = vars(Participant),
+             scales = "free_y",
+             axes = "all",
+             axis.labels = "margins")
 
 p
 
@@ -377,11 +370,10 @@ p <- ggplot(data, aes(Session, Responding,
     limits = c(1, 25),
     expand = expansion(mult = x_mult)
   ) +
-  facet_grid2(Participant ~ .,
-    scales = "free_y",
-    remove_labels = "x",
-    axes = "x"
-  )
+  facet_grid(rows = vars(Participant),
+             scales = "free_y",
+             axes = "all",
+             axis.labels = "margins")
 
 staggered_pls <- list(
   "1" = c(3.5, 3.5, 3.5),
@@ -407,7 +399,6 @@ rm(list = ls())
 
 library(ggsced)
 library(tidyverse)
-library(ggh4x)
 
 data <- Gilroyetal2021
 
@@ -497,30 +488,32 @@ p <- ggplot(data, aes(Session, Responding,
     limits = c(1, 25),
     expand = expansion(mult = x_mult)
   ) +
-  facet_grid2(Participant ~ .,
-    scales = "free_y",
-    remove_labels = "x",
-    axes = "x"
-  ) +
+  facet_grid(rows = vars(Participant),
+             scales = "free_y",
+             axes = "all",
+             axis.labels = "margins") +
   facetted_pos_scales(
     y = list(
       scale_y_continuous(
         name = "Frequency",
         breaks = c(0, 10, 20),
         limits = c(0, 20),
-        expand = expansion(mult = y_mult)
+        expand = expansion(mult = y_mult),
+        guide = guide_axis(cap = "both")
       ),
       scale_y_continuous(
         name = "Frequency",
         breaks = c(0, 5, 10),
         limits = c(0, 10),
-        expand = expansion(mult = y_mult)
+        expand = expansion(mult = y_mult),
+        guide = guide_axis(cap = "both")
       ),
       scale_y_continuous(
         name = "Frequency",
         breaks = c(0, 10, 20),
         limits = c(0, 20),
-        expand = expansion(mult = y_mult)
+        expand = expansion(mult = y_mult),
+        guide = guide_axis(cap = "both")
       )
     )
   ) +
@@ -532,9 +525,7 @@ p <- ggplot(data, aes(Session, Responding,
     panel.background = element_blank(),
     strip.background = element_blank(),
     strip.text = element_blank()
-  ) +
-  ggsced_style_x(x_mult, lwd = 2) +
-  ggsced_style_y(y_mult, lwd = 2)
+  )
 
 staggered_pls <- list(
   "1" = c(3.5, 3.5, 3.5),

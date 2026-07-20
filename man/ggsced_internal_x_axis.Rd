@@ -7,7 +7,8 @@
 ggsced_internal_x_axis(expansion = 0, lwd = 2, col = "black")
 }
 \arguments{
-\item{expansion}{Percentage of axis to pad (left/right) to break axis (Note: normalized parent units)}
+\item{expansion}{Percentage of axis to pad (left/right)
+to break axis (Note: normalized parent units)}
 
 \item{lwd}{Width of axis line}
 
@@ -17,5 +18,6 @@ ggsced_internal_x_axis(expansion = 0, lwd = 2, col = "black")
 Rendering of customized x axis across facets
 }
 \description{
-Internal helper class to draw a conventional x-axis per SCED publication suggestions.
+Internal helper class to draw a conventional
+x-axis per SCED publication suggestions.
 }

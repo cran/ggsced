@@ -14,9 +14,9 @@ test_that("Correct facet labels are generated", {
     scale_x_continuous(breaks = c(1:27),
                        limits = c(1, 27),
                        expand = expansion(mult = c(x_mult))) +
-    facet_grid2(Participant ~ .,
-                remove_labels = "x",
-                axes = "x") +
+    facet_grid(rows = vars(Participant),
+               axes = "all",
+               axis.labels = "margins") +
     theme(text = element_text(size = 14, color = 'black'),
           panel.background = element_blank(),
           strip.background = element_blank(),
@@ -54,9 +54,9 @@ test_that("Correct facet labels are generated", {
     scale_x_continuous(breaks = c(1:27),
                        limits = c(1, 27),
                        expand = expansion(mult = c(x_mult))) +
-    facet_grid2(Participant ~ .,
-                remove_labels = "x",
-                axes = "x") +
+    facet_grid(rows = vars(Participant),
+               axes = "all",
+               axis.labels = "margins") +
     theme(text = element_text(size = 14, color = 'black'),
           panel.background = element_blank(),
           strip.background = element_blank(),
