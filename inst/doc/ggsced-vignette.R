@@ -24,33 +24,45 @@ data_set <- Gilroyetal2015
 head(data_set)
 
 ## ----demo-gilroy-2015-step-2, eval=TRUE---------------------------------------
-# Create condition labels for the plot
-data_labels <- data_set %>%
-  select(Participant, Condition) %>%
-  filter(Participant == "Andrew") %>%
-  unique() %>%
-  mutate(
-    x = c(2.5, 9, 18.5, 25.5),
-    y = 100
+# Create label data using ggsced prep helpers
+data_labels <- ggsced_prep_labels(
+  data = data_set,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  specs = list(
+    Andrew = list(
+      list(label = "Baseline", x = 2.5, y = 100),
+      list(label = "Treatment", x = 9, y = 100),
+      list(label = "Maintenance", x = 18.5, y = 100),
+      list(label = "Generalization", x = 25.5, y = 100)
+    )
   )
+)
 
-participant_labels <- data_set %>%
-  select(Participant) %>%
-  unique() %>%
-  mutate(
-    x = rep(27, 3),
-    y = 0
+participant_labels <- ggsced_prep_labels(
+  data = data_set,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  default_hadj = 1,
+  default_vadj = 0,
+  specs = list(
+    Andrew = list(label = "Andrew", x = 27, y = 0),
+    Brian = list(label = "Brian", x = 27, y = 0),
+    Charles = list(label = "Charles", x = 27, y = 0)
   )
+)
 
 # Create the base ggplot
 p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
   geom_line() +
   geom_point(size = 3) +
   geom_text(data = data_labels,
-            mapping = aes(x, y, label = Condition)) +
+            mapping = aes(Session, Responding, label = label)) +
   geom_text(data = participant_labels,
-            mapping = aes(x, y,
-              label = Participant
+            mapping = aes(Session, Responding,
+              label = label
             ),
             inherit.aes = FALSE,
             hjust = 1,
@@ -63,23 +75,35 @@ p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
 p
 
 ## ----demo-gilroy-2015-step-3, eval=TRUE---------------------------------------
-# Create condition labels for the plot
-data_labels <- data_set %>%
-  select(Participant, Condition) %>%
-  filter(Participant == "Andrew") %>%
-  unique() %>%
-  mutate(
-    x = c(2.5, 9, 18.5, 25.5),
-    y = 100
+# Create label data using ggsced prep helpers
+data_labels <- ggsced_prep_labels(
+  data = data_set,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  specs = list(
+    Andrew = list(
+      list(label = "Baseline", x = 2.5, y = 100),
+      list(label = "Treatment", x = 9, y = 100),
+      list(label = "Maintenance", x = 18.5, y = 100),
+      list(label = "Generalization", x = 25.5, y = 100)
+    )
   )
+)
 
-participant_labels <- data_set %>%
-  select(Participant) %>%
-  unique() %>%
-  mutate(
-    x = rep(27, 3),
-    y = 0
+participant_labels <- ggsced_prep_labels(
+  data = data_set,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  default_hadj = 1,
+  default_vadj = 0,
+  specs = list(
+    Andrew = list(label = "Andrew", x = 27, y = 0),
+    Brian = list(label = "Brian", x = 27, y = 0),
+    Charles = list(label = "Charles", x = 27, y = 0)
   )
+)
 
 # Create the base ggplot
 p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
@@ -87,12 +111,12 @@ p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
   geom_point(size = 3) +
   geom_text(
     data = data_labels,
-    mapping = aes(x, y, label = Condition)
+    mapping = aes(Session, Responding, label = label)
   ) +
   geom_text(
     data = participant_labels,
-    mapping = aes(x, y,
-      label = Participant
+    mapping = aes(Session, Responding,
+      label = label
     ),
     inherit.aes = FALSE,
     hjust = 1,
@@ -113,23 +137,35 @@ staggered_pls <- list(
 ggsced(p, staggered_pls)
 
 ## ----demo-gilroy-2015-step-4, eval=TRUE---------------------------------------
-# Create condition labels for the plot
-data_labels <- data_set %>%
-  select(Participant, Condition) %>%
-  filter(Participant == "Andrew") %>%
-  unique() %>%
-  mutate(
-    x = c(2.5, 9, 18.5, 25.5),
-    y = 97.5
+# Create label data using ggsced prep helpers
+data_labels <- ggsced_prep_labels(
+  data = data_set,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  specs = list(
+    Andrew = list(
+      list(label = "Baseline", x = 2.5, y = 97.5),
+      list(label = "Treatment", x = 9, y = 97.5),
+      list(label = "Maintenance", x = 18.5, y = 97.5),
+      list(label = "Generalization", x = 25.5, y = 97.5)
+    )
   )
+)
 
-participant_labels <- data_set %>%
-  select(Participant) %>%
-  unique() %>%
-  mutate(
-    x = rep(27, 3),
-    y = 0
+participant_labels <- ggsced_prep_labels(
+  data = data_set,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  default_hadj = 1,
+  default_vadj = 0,
+  specs = list(
+    Andrew = list(label = "Andrew", x = 27, y = 0),
+    Brian = list(label = "Brian", x = 27, y = 0),
+    Charles = list(label = "Charles", x = 27, y = 0)
   )
+)
 
 # Set plot scaling parameters
 y_mult <- .05
@@ -141,14 +177,14 @@ p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
   geom_point(size = 3) +
   geom_text(
     data = data_labels,
-    mapping = aes(x, y, label = Condition),
+    mapping = aes(Session, Responding, label = label),
     hjust = 0.5,
     vjust = 0.0625
   ) +
   geom_text(
     data = participant_labels,
-    mapping = aes(x, y,
-      label = Participant
+    mapping = aes(Session, Responding,
+      label = label
     ),
     inherit.aes = FALSE,
     hjust = 1,
@@ -170,9 +206,9 @@ p <- ggplot(data_set, aes(Session, Responding, group = Condition)) +
   facet_grid(rows = vars(Participant),
              axes = "all",
              axis.labels = "margins") +
+  theme_classic() +
   theme(
     text = element_text(size = 14, color = "black"),
-    panel.background = element_blank(),
     strip.background = element_blank(),
     strip.text = element_blank()
   )
@@ -199,20 +235,35 @@ head(data)
 ## ----demo-gilroy-2021-step-2, eval=TRUE---------------------------------------
 data <- Gilroyetal2021
 
-data_labels <- data %>%
-  select(Participant, Condition) %>%
-  filter(Participant == "John") %>%
-  unique() %>%
-  mutate(
-    x = c(2, 5, 8, 11, 14, 18),
-    Label = gsub("2", "", Condition),
+john_conditions <- data |>
+  filter(Participant == "John") |>
+  pull(Condition) |>
+  unique() |>
+  as.character()
+
+john_positions <- c(2, 5, 8, 11, 14, 18)
+john_specs <- lapply(seq_along(john_conditions), function(i) {
+  list(
+    label = gsub("2", "", john_conditions[i]),
+    x = john_positions[i],
     y = 20
   )
+})
 
-series_labels <- data %>%
-  filter(Participant == "John") %>%
-  select(Participant, Condition) %>%
-  slice(1:2) %>%
+data_labels <- ggsced_prep_labels(
+  data = data,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  specs = list(
+    John = john_specs
+  )
+)
+
+series_labels <- data |>
+  filter(Participant == "John") |>
+  select(Participant, Condition) |>
+  slice(1:2) |>
   mutate(
     x0 = c(20.5, 20.5),
     x1 = c(19.5, 19.5),
@@ -220,13 +271,32 @@ series_labels <- data %>%
     Label = c("Responses", "Reinforcers")
   )
 
-participant_labels <- data %>%
-  select(Participant) %>%
-  unique() %>%
-  mutate(
-    x = rep(25, 3),
-    y = c(19.5, 9.5, 0)
-  )
+participant_names <- data |>
+  pull(Participant) |>
+  unique() |>
+  as.character()
+
+participant_y <- c(19.5, 9.5, 0)
+participant_specs <- setNames(
+  lapply(seq_along(participant_names), function(i) {
+    list(
+      label = participant_names[i],
+      x = 25,
+      y = participant_y[i],
+      hadj = 1,
+      vadj = 0
+    )
+  }),
+  participant_names
+)
+
+participant_labels <- ggsced_prep_labels(
+  data = data,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  specs = participant_specs
+)
 
 p <- ggplot(data, aes(Session, Responding,
   group = Condition
@@ -249,8 +319,8 @@ p <- ggplot(data, aes(Session, Responding,
   ) +
   geom_text(
     data = data_labels,
-    mapping = aes(x, y,
-      label = Label
+    mapping = aes(Session, Responding,
+      label = label
     ),
     inherit.aes = FALSE
   ) +
@@ -270,8 +340,8 @@ p <- ggplot(data, aes(Session, Responding,
   ) +
   geom_text(
     data = participant_labels,
-    mapping = aes(x, y,
-      label = Participant
+    mapping = aes(Session, Responding,
+      label = label
     ),
     inherit.aes = FALSE,
     hjust = 1,
@@ -287,20 +357,35 @@ p
 ## ----demo-gilroy-2021-step-3, eval=TRUE---------------------------------------
 data <- Gilroyetal2021
 
-data_labels <- data %>%
-  select(Participant, Condition) %>%
-  filter(Participant == "John") %>%
-  unique() %>%
-  mutate(
-    x = c(2, 5, 8, 11, 14, 18),
-    Label = gsub("2", "", Condition),
+john_conditions <- data |>
+  filter(Participant == "John") |>
+  pull(Condition) |>
+  unique() |>
+  as.character()
+
+john_positions <- c(2, 5, 8, 11, 14, 18)
+john_specs <- lapply(seq_along(john_conditions), function(i) {
+  list(
+    label = gsub("2", "", john_conditions[i]),
+    x = john_positions[i],
     y = 20
   )
+})
 
-series_labels <- data %>%
-  filter(Participant == "John") %>%
-  select(Participant, Condition) %>%
-  slice(1:2) %>%
+data_labels <- ggsced_prep_labels(
+  data = data,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  specs = list(
+    John = john_specs
+  )
+)
+
+series_labels <- data |>
+  filter(Participant == "John") |>
+  select(Participant, Condition) |>
+  slice(1:2) |>
   mutate(
     x0 = c(20.5, 20.5),
     x1 = c(19.5, 19.5),
@@ -308,13 +393,32 @@ series_labels <- data %>%
     Label = c("Responses", "Reinforcers")
   )
 
-participant_labels <- data %>%
-  select(Participant) %>%
-  unique() %>%
-  mutate(
-    x = rep(25, 3),
-    y = c(19.5, 9.5, 0)
-  )
+participant_names <- data |>
+  pull(Participant) |>
+  unique() |>
+  as.character()
+
+participant_y <- c(19.5, 9.5, 0)
+participant_specs <- setNames(
+  lapply(seq_along(participant_names), function(i) {
+    list(
+      label = participant_names[i],
+      x = 25,
+      y = participant_y[i],
+      hadj = 1,
+      vadj = 0
+    )
+  }),
+  participant_names
+)
+
+participant_labels <- ggsced_prep_labels(
+  data = data,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  specs = participant_specs
+)
 
 p <- ggplot(data, aes(Session, Responding,
   group = Condition
@@ -337,8 +441,8 @@ p <- ggplot(data, aes(Session, Responding,
   ) +
   geom_text(
     data = data_labels,
-    mapping = aes(x, y,
-      label = Label
+    mapping = aes(Session, Responding,
+      label = label
     ),
     inherit.aes = FALSE
   ) +
@@ -358,8 +462,8 @@ p <- ggplot(data, aes(Session, Responding,
   ) +
   geom_text(
     data = participant_labels,
-    mapping = aes(x, y,
-      label = Participant
+    mapping = aes(Session, Responding,
+      label = label
     ),
     inherit.aes = FALSE,
     hjust = 1,
@@ -405,20 +509,35 @@ data <- Gilroyetal2021
 y_mult <- .05
 x_mult <- .02
 
-data_labels <- data %>%
-  select(Participant, Condition) %>%
-  filter(Participant == "John") %>%
-  unique() %>%
-  mutate(
-    x = c(2, 5, 8, 11, 14, 18),
-    Label = gsub("2", "", Condition),
+john_conditions <- data |>
+  filter(Participant == "John") |>
+  pull(Condition) |>
+  unique() |>
+  as.character()
+
+john_positions <- c(2, 5, 8, 11, 14, 18)
+john_specs <- lapply(seq_along(john_conditions), function(i) {
+  list(
+    label = gsub("2", "", john_conditions[i]),
+    x = john_positions[i],
     y = 20
   )
+})
 
-series_labels <- data %>%
-  filter(Participant == "John") %>%
-  select(Participant, Condition) %>%
-  slice(1:2) %>%
+data_labels <- ggsced_prep_labels(
+  data = data,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  specs = list(
+    John = john_specs
+  )
+)
+
+series_labels <- data |>
+  filter(Participant == "John") |>
+  select(Participant, Condition) |>
+  slice(1:2) |>
   mutate(
     x0 = c(20.5, 20.5),
     x1 = c(19.5, 19.5),
@@ -426,13 +545,32 @@ series_labels <- data %>%
     Label = c("Responses", "Reinforcers")
   )
 
-participant_labels <- data %>%
-  select(Participant) %>%
-  unique() %>%
-  mutate(
-    x = rep(25, 3),
-    y = c(19.5, 9.5, 0)
-  )
+participant_names <- data |>
+  pull(Participant) |>
+  unique() |>
+  as.character()
+
+participant_y <- c(19.5, 9.5, 0)
+participant_specs <- setNames(
+  lapply(seq_along(participant_names), function(i) {
+    list(
+      label = participant_names[i],
+      x = 25,
+      y = participant_y[i],
+      hadj = 1,
+      vadj = 0
+    )
+  }),
+  participant_names
+)
+
+participant_labels <- ggsced_prep_labels(
+  data = data,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  specs = participant_specs
+)
 
 p <- ggplot(data, aes(Session, Responding,
   group = Condition
@@ -455,8 +593,8 @@ p <- ggplot(data, aes(Session, Responding,
   ) +
   geom_text(
     data = data_labels,
-    mapping = aes(x, y,
-      label = Label
+    mapping = aes(Session, Responding,
+      label = label
     ),
     inherit.aes = FALSE
   ) +
@@ -476,8 +614,8 @@ p <- ggplot(data, aes(Session, Responding,
   ) +
   geom_text(
     data = participant_labels,
-    mapping = aes(x, y,
-      label = Participant
+    mapping = aes(Session, Responding,
+      label = label
     ),
     inherit.aes = FALSE,
     hjust = 1,
@@ -517,12 +655,12 @@ p <- ggplot(data, aes(Session, Responding,
       )
     )
   ) +
+  theme_classic() +
   theme(
     text = element_text(
       size = 14,
       color = "black"
     ),
-    panel.background = element_blank(),
     strip.background = element_blank(),
     strip.text = element_blank()
   )

@@ -17,7 +17,7 @@ A data frame with 69 rows and 7 variables:
 }
 }
 \source{
-<doi:https://doi.org/10.1002/jaba.826>
+<doi:https://doi.org/10.1002/jaba.677>
 }
 \usage{
 Gilroyetal2021

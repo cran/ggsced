@@ -1,11 +1,39 @@
 library(ggsced)
-library(tidyverse)
 library(ggh4x)
 
 data <- Gilroyetal2021
 
 y_mult = .05
 x_mult = .02
+
+phase_labels <- ggsced_prep_labels(
+  data = data,
+  facet_col = "Participant",
+  x_col = "Session",
+  y_col = "Responding",
+  default_hadj = 0.5,
+  default_vadj = 0,
+  specs = list(
+    John = list(
+      list(label = "John", x = 25, y = 20, hadj = 1, vadj = 1),
+      list(label = "Baseline", x = 2, y = 20),
+      list(label = "FR-Lowest", x = 5, y = 20),
+      list(label = "Baseline", x = 8, y = 20),
+      list(label = "FR-Inelastic", x = 11, y = 20),
+      list(label = "FR-Elastic", x = 14, y = 20),
+      list(label = "FR-Inelastic", x = 17, y = 20),
+
+      list(label = "Responding", x = 21, y = 15, hadj = 0, vadj = 0.5),
+      list(label = "Reinforcers", x = 21, y = 5, hadj = 0, vadj = 0.5)
+    ),
+    Anthony = list(
+      list(label = "Anthony", x = 25, y = 10, hadj = 1, vadj = 1)
+    ),
+    Charles = list(
+      list(label = "Charles", x = 25, y = 10, hadj = 1, vadj = 1)
+    )
+  )
+)
 
 p = ggplot(data, aes(Session, Responding,
                      group = Condition)) +
@@ -23,56 +51,51 @@ p = ggplot(data, aes(Session, Responding,
              fill = 'white') +
   scale_x_continuous(breaks = c(1:25),
                      limits = c(1, 25),
+                     guide = guide_axis(cap = "both"),
                      expand = expansion(mult = x_mult)) +
-  facet_grid2(Participant ~ .,
-              scales = "free_y",
-              remove_labels = "x",
-              axes = "x")  +
+  facet_grid(Participant ~ .,
+             scales = "free_y",
+             axis.labels = "margins",
+             axes = "all")  +
   facetted_pos_scales(
     y = list(
       scale_y_continuous(name = "Frequency",
                          breaks = c(0, 10, 20),
                          limits = c(0, 20),
+                         guide = guide_axis(cap = "both"),
                          expand = expansion(mult = y_mult)),
       scale_y_continuous(name = "Frequency",
                          breaks = c(0, 5, 10),
                          limits = c(0, 10),
+                         guide = guide_axis(cap = "both"),
                          expand = expansion(mult = y_mult)),
       scale_y_continuous(name = "Frequency",
                          breaks = c(0, 10, 20),
                          limits = c(0, 20),
+                         guide = guide_axis(cap = "both"),
                          expand = expansion(mult = y_mult))
     )
   ) +
+  geom_text(data = phase_labels,
+            mapping = aes(label = label,
+                          hjust = hadj,
+                          vjust = vadj,
+                          fontface = fontface),
+            show.legend = FALSE,
+            family = "Times New Roman") +
+  theme_classic() +
   theme(
     text = element_text(size = 14,
-                        color = 'black'),
-    panel.background = element_blank(),
+                        family = "Times New Roman",
+                        color = "black"),
+    #panel.background = element_blank(),
     strip.background = element_blank(),
     strip.text = element_blank()
-  ) +
-  ggsced_style_x(x_mult, lwd = 2) +
-  ggsced_style_y(y_mult, lwd = 2)
-
-simple_facet_labels_df = ggsced_facet_labels(p, y = 20)
-simple_facet_labels_df[2, "Responding"] <- 10
-simple_facet_labels_df[3, "Responding"] <- 8
-
-p <- p + geom_text(data = simple_facet_labels_df,
-                   hjust = 1,
-                   vjust = 0.5,
-                   mapping = aes(label = label))
-
-simple_condition_labels_df = ggsced_condition_labels(p)
-simple_condition_labels_df$label = gsub("2", "", simple_condition_labels_df$label)
-
-p <- p + geom_text(data = simple_condition_labels_df,
-                   mapping = aes(label = label),
-                   hjust = 0.5,
-                   vjust = 0.5)
+  )
 
 # Create extra rows for Bx Labels
-extra_labels_df <- simple_condition_labels_df[1:2,]
+# TODO: Line helper?
+extra_labels_df <- phase_labels[1:2,]
 extra_labels_df$Session <- 21.25
 extra_labels_df$x0 <- 21
 extra_labels_df$x1 <- 19.5
@@ -84,11 +107,6 @@ extra_labels_df[1, "Responding"] <- 15
 extra_labels_df[2, "label"] <- 'Reinforcers'
 extra_labels_df[2, "Responding"] <- 5
 extra_labels_df[2, "y"] <- 5
-
-p <- p + geom_text(data = extra_labels_df,
-                   mapping = aes(label = label),
-                   hjust = 0,
-                   vjust = 0.5)
 
 p <- p + geom_segment(data = extra_labels_df,
                       mapping = aes(x = x0,

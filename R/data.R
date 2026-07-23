@@ -32,5 +32,19 @@
 #'   \item{PhaseNum}{Sequenced phase number}
 #'   \item{LineOff}{Offset of phase line}
 #' }
-#' @source <doi:https://doi.org/10.1002/jaba.826>
+#' @source <doi:https://doi.org/10.1002/jaba.677>
 "Gilroyetal2021"
+
+#' @title Plotting data from Lozy et al. (2020)
+#'
+#' @description Treatment data from Lozy et al. (2020)
+#' @format A data frame with 91 rows and 5 variables:
+#' \describe{
+#'   \item{Session}{Session number}
+#'   \item{Participant}{Participant name}
+#'   \item{Phase}{Phase number}
+#'   \item{Response}{Response type}
+#'   \item{Value}{Response value}
+#' }
+#' @source <doi:https://doi.org/10.1002/jaba.702>
+"LozyEtAl2020Data"
